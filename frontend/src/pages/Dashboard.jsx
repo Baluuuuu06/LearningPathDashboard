@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { FiTrendingUp, FiClock, FiStar, FiAward, FiCheckCircle, FiPlayCircle, FiActivity } from 'react-icons/fi';
-import { FaFire, FaSnowflake } from 'react-icons/fa';
+import { FiTrendingUp, FiClock, FiStar, FiAward, FiCheckCircle, FiPlayCircle, FiActivity, FiArrowRight } from 'react-icons/fi';
+import { FaFire, FaSnowflake, FaBrain, FaDumbbell } from 'react-icons/fa';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -92,13 +92,18 @@ const LevelProgress = ({ level, xp_progress }) => {
 
 const Dashboard = () => {
   const [data, setData] = useState(null);
+  const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await api.get('/dashboard');
-        setData(response.data);
+        const [dashRes, analyticsRes] = await Promise.all([
+          api.get('/dashboard'),
+          api.get('/analytics').catch(err => { console.warn(err); return {data: null}; })
+        ]);
+        setData(dashRes.data);
+        setAnalytics(analyticsRes.data);
       } catch (error) {
         console.error("Failed to fetch dashboard data", error);
       } finally {
@@ -204,6 +209,73 @@ const Dashboard = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Analytics Section */}
+      {analytics && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+          
+          {/* Weak / Strong Topics */}
+          <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              className="glass-panel bg-white/50 dark:bg-slate-800/50 p-6 rounded-3xl border border-slate-200 dark:border-slate-700/50"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-emerald-500/20 text-emerald-500 rounded-xl"><FaBrain size={20}/></div>
+                <h2 className="text-lg font-bold text-slate-800 dark:text-white">Mastered Topics</h2>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {analytics.strong_topics && analytics.strong_topics.length > 0 ? (
+                  analytics.strong_topics.map(t => (
+                    <span key={t} className="px-4 py-2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full text-sm font-semibold border border-emerald-500/20">{t}</span>
+                  ))
+                ) : <p className="text-sm text-slate-500">Keep learning to discover your strengths!</p>}
+              </div>
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} delay={0.1}
+              className="glass-panel bg-white/50 dark:bg-slate-800/50 p-6 rounded-3xl border border-slate-200 dark:border-slate-700/50"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-orange-500/20 text-orange-500 rounded-xl"><FaDumbbell size={20}/></div>
+                <h2 className="text-lg font-bold text-slate-800 dark:text-white">Needs Review</h2>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {analytics.weak_topics && analytics.weak_topics.length > 0 ? (
+                  analytics.weak_topics.map(t => (
+                    <span key={t} className="px-4 py-2 bg-orange-500/10 text-orange-600 dark:text-orange-400 rounded-full text-sm font-semibold border border-orange-500/20">{t}</span>
+                  ))
+                ) : <p className="text-sm text-slate-500">No weak topics right now! Great job.</p>}
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Recommendations */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} delay={0.2}
+            className="glass-panel bg-gradient-to-br from-blue-600/10 to-cyan-500/10 border border-blue-500/20 p-6 rounded-3xl"
+          >
+            <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-6">Recommended for You</h2>
+            <div className="space-y-4">
+              {analytics.recommendations && analytics.recommendations.map((rec, idx) => (
+                <a 
+                  key={idx} 
+                  href={rec.action_url}
+                  className="block p-4 bg-slate-900/40 rounded-2xl border border-slate-700 hover:border-blue-500/50 transition-colors group"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-bold text-slate-200 group-hover:text-blue-400 transition-colors">{rec.title}</h3>
+                    <FiArrowRight className="text-slate-500 group-hover:text-blue-400 transition-colors mt-1" />
+                  </div>
+                  <p className="text-xs text-slate-400 leading-relaxed mb-3">{rec.description}</p>
+                  <span className="text-xs font-semibold text-cyan-400 bg-cyan-400/10 px-2 py-1 rounded-md">{rec.tag}</span>
+                </a>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };

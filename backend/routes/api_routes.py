@@ -4,6 +4,7 @@ from controllers.projects_controller import get_projects
 from controllers.quiz_controller import get_quiz, submit_quiz
 from controllers.dashboard_controller import get_dashboard_stats
 from controllers.chatbot_controller import ask_chatbot
+from controllers.analytics_controller import get_user_analytics
 
 api_bp = Blueprint('api_bp', __name__)
 
@@ -16,4 +17,5 @@ api_bp.route('/projects/<skill_name>', methods=['GET'])(get_projects)
 api_bp.route('/quiz/<skill_name>', methods=['GET'])(get_quiz)
 api_bp.route('/quiz/submit', methods=['POST'])(submit_quiz)
 api_bp.route('/dashboard', methods=['GET'])(get_dashboard_stats)
+api_bp.route('/analytics', methods=['GET'])(get_user_analytics)
 api_bp.route('/chatbot/ask', methods=['POST'])(ask_chatbot)
