@@ -99,6 +99,25 @@ def init_db():
     db.activity_history.create_indexes(activity_indexes)
     logger.info("Created indexes for 'activity_history'.")
 
+    # 6. Questions Collection Indexes
+    if "questions" not in db.list_collection_names():
+        db.create_collection("questions")
+    question_indexes = [
+        IndexModel([("topic", ASCENDING), ("difficulty", ASCENDING)], name="topic_diff_idx"),
+        IndexModel([("tags", ASCENDING)], name="tags_idx")
+    ]
+    db.questions.create_indexes(question_indexes)
+    logger.info("Created indexes for 'questions'.")
+
+    # 7. Quiz Attempts Collection Indexes
+    if "quiz_attempts" not in db.list_collection_names():
+        db.create_collection("quiz_attempts")
+    quiz_attempt_indexes = [
+        IndexModel([("user_id", ASCENDING), ("date", DESCENDING)], name="user_quiz_attempts_idx")
+    ]
+    db.quiz_attempts.create_indexes(quiz_attempt_indexes)
+    logger.info("Created indexes for 'quiz_attempts'.")
+
     logger.info("Database optimization complete! 🎉")
 
 if __name__ == "__main__":
