@@ -10,6 +10,7 @@ import RoadmapPage from './pages/RoadmapPage';
 import ProjectsPage from './pages/ProjectsPage';
 import QuizPage from './pages/QuizPage';
 import SettingsPage from './pages/SettingsPage';
+import LeaderboardPage from './pages/LeaderboardPage';
 import DashboardLayout from './components/DashboardLayout';
 import PageTransition from './components/PageTransition';
 import { ThemeProvider } from './context/ThemeContext';
@@ -29,6 +30,7 @@ const AnimatedRoutes = () => {
         <Route path="/roadmap/:skillName" element={<DashboardLayout><PageTransition><RoadmapPage /></PageTransition></DashboardLayout>} />
         <Route path="/projects" element={<DashboardLayout><PageTransition><ProjectsPage /></PageTransition></DashboardLayout>} />
         <Route path="/quiz/:skillName" element={<DashboardLayout><PageTransition><QuizPage /></PageTransition></DashboardLayout>} />
+        <Route path="/leaderboard" element={<DashboardLayout><PageTransition><LeaderboardPage /></PageTransition></DashboardLayout>} />
         <Route path="/settings" element={<DashboardLayout><PageTransition><SettingsPage /></PageTransition></DashboardLayout>} />
       </Routes>
     </AnimatePresence>

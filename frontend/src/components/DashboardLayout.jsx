@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiHome, FiBook, FiMap, FiBriefcase, FiCheckSquare, FiMessageSquare, FiAward, FiSettings, FiLogOut, FiSearch, FiBell, FiSun, FiMoon } from 'react-icons/fi';
+import { FiGrid, FiBookOpen, FiBriefcase, FiSettings, FiLogOut, FiMoon, FiSun, FiMessageSquare, FiAward, FiSearch, FiBell, FiCheckSquare } from 'react-icons/fi';
 import { ThemeContext } from '../context/ThemeContext';
 import ChatBot from './ChatBot';
 
@@ -39,9 +39,10 @@ const DashboardLayout = ({ children }) => {
   };
 
   const navItems = [
-    { name: 'Dashboard', path: '/dashboard', icon: <FiHome /> },
-    { name: 'Skills', path: '/skills', icon: <FiBook /> },
+    { name: 'Dashboard', path: '/dashboard', icon: <FiGrid /> },
+    { name: 'Skills', path: '/skills', icon: <FiBookOpen /> },
     { name: 'Projects', path: '/projects', icon: <FiBriefcase /> },
+    { name: 'Leaderboard', path: '/leaderboard', icon: <FiAward /> },
     { name: 'Settings', path: '/settings', icon: <FiSettings /> },
   ];
 

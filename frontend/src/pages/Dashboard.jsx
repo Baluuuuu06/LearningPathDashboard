@@ -93,17 +93,20 @@ const LevelProgress = ({ level, xp_progress }) => {
 const Dashboard = () => {
   const [data, setData] = useState(null);
   const [analytics, setAnalytics] = useState(null);
+  const [achievements, setAchievements] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [dashRes, analyticsRes] = await Promise.all([
+        const [dashRes, analyticsRes, achRes] = await Promise.all([
           api.get('/dashboard'),
-          api.get('/analytics').catch(err => { console.warn(err); return {data: null}; })
+          api.get('/analytics').catch(err => { console.warn(err); return {data: null}; }),
+          api.get('/achievements').catch(err => { console.warn(err); return {data: {achievements: []}}; })
         ]);
         setData(dashRes.data);
         setAnalytics(analyticsRes.data);
+        setAchievements(achRes.data.achievements);
       } catch (error) {
         console.error("Failed to fetch dashboard data", error);
       } finally {
@@ -275,6 +278,37 @@ const Dashboard = () => {
             </div>
           </motion.div>
         </div>
+      )}
+
+      {/* Achievements Gallery */}
+      {achievements && achievements.length > 0 && (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+          className="glass-panel bg-white/50 dark:bg-slate-800/50 p-8 rounded-3xl border border-slate-200 dark:border-slate-700/50 mb-10"
+        >
+          <div className="flex items-center gap-4 mb-8">
+            <div className="p-3 bg-yellow-500/20 text-yellow-500 rounded-xl"><FiAward size={24}/></div>
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Achievements Gallery</h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            {achievements.map((ach) => (
+              <div 
+                key={ach.id} 
+                className={`relative flex flex-col items-center p-4 rounded-2xl border transition-all ${
+                  ach.unlocked 
+                    ? 'bg-gradient-to-b from-yellow-500/10 to-orange-500/5 border-yellow-500/30 shadow-lg shadow-yellow-500/10 hover:-translate-y-1' 
+                    : 'bg-slate-800/30 border-slate-700/50 opacity-60 grayscale'
+                }`}
+              >
+                <div className="text-4xl mb-3 filter drop-shadow-md">{ach.icon}</div>
+                <h3 className={`text-sm font-bold text-center mb-1 ${ach.unlocked ? 'text-yellow-500' : 'text-slate-400'}`}>{ach.title}</h3>
+                <p className="text-xs text-center text-slate-500 leading-tight">{ach.description}</p>
+                {!ach.unlocked && <div className="absolute top-2 right-2 w-3 h-3 bg-slate-700 rounded-full border border-slate-900"></div>}
+                {ach.unlocked && <div className="absolute top-2 right-2 w-3 h-3 bg-green-500 rounded-full border border-green-900 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></div>}
+              </div>
+            ))}
+          </div>
+        </motion.div>
       )}
     </div>
   );
